@@ -1,18 +1,18 @@
 # TaskTracker - трекер задач для команды
 
-Курс «Backend-разработка на Django», **задание 2: «Трекер задач для команды»** (фокус: права доступа и IDOR).
+Курс «Backend-разработка на Django», задание 2 «Трекер задач для команды» (права доступа и IDOR).
 
-Автор: **Дильмухан Дамир, группа УСВТиПО 26-4**. Работа индивидуальная, все роли (архитектор, backend 1, backend 2, DevOps/QA) совмещены.
+Автор: Дильмухан Дамир, УСВТиПО 26-4. Делал один, поэтому все роли (архитектор, backend, API/тесты, DevOps) на мне.
 
 ![CI](../../actions/workflows/ci.yml/badge.svg)
 
-## Что умеет
+## Что есть
 
 - регистрация, вход, выход (`accounts`)
 - проекты (участники через M2M), задачи со статусами **To Do / In Progress / Done**, приоритетом, сроком и исполнителем, комментарии
 - полный CRUD задач на CBV: `ListView`, `DetailView`, `CreateView`, `UpdateView`, `DeleteView`, формы на `ModelForm`
-- **обычный пользователь видит только свои задачи** (где он автор или исполнитель), чужая задача по прямому id отдаёт 404
-- роль **«Менеджер»** (группа с правом `tracker.view_all_tasks`): видит все задачи, создаёт и удаляет проекты, назначает задачи на других
+- обычный пользователь видит только свои задачи (где он автор или исполнитель), чужая задача по id отдаёт 404
+- роль «Менеджер» (группа с правом `tracker.view_all_tasks`): видит все задачи, создаёт и удаляет проекты, назначает задачи на других
 - REST API на DRF (`ModelViewSet` + `DefaultRouter`), токен-аутентификация, Browsable API
 - админка с фильтрами, поиском и inline-задачами
 - Docker + docker-compose (Django + PostgreSQL), GitHub Actions (ruff, тесты, coverage, `check --deploy`, сборка образа)
@@ -39,16 +39,16 @@ erDiagram
 | Действие | Гость | Пользователь | Менеджер |
 |---|---|---|---|
 | Список задач | -> на логин | только свои (автор/исполнитель) | все |
-| Открыть / изменить чужую задачу по id | -> на логин | **404** | да |
+| Открыть / изменить чужую задачу по id | -> на логин | 404 | да |
 | Создать задачу | - | да, только на себя и только в своём проекте | да, на любого участника проекта |
 | Удалить задачу | - | только если он автор | да |
-| Создать / изменить / удалить проект | - | **403** | да |
-| API без токена | **401** | - | - |
+| Создать / изменить / удалить проект | - | 403 | да |
+| API без токена | 401 | - | - |
 
 Как сделано:
 
 - `LoginRequiredMixin` на всех страницах трекера
-- `Task.objects.visible_for(user)` (`tracker/models.py`), все представления задач берут queryset только через него, поэтому `get_object()` для чужого id не находит объект -> 404. 404 вместо 403 выбран специально, чтобы не подсказывать, что задача с таким id существует
+- `Task.objects.visible_for(user)` в `tracker/models.py`. Все представления задач берут queryset через него, поэтому чужой id просто не находится и будет 404 (403 подсказал бы, что такая задача есть)
 - `PermissionRequiredMixin` (`tracker.add_project`, `change_project`, `delete_project`) для управления проектами, у обычного пользователя 403
 - группа «Менеджер» создаётся миграцией `tracker/migrations/0002_manager_group.py`
 - в API то же самое: `get_queryset()` фильтрует по пользователю, плюс свои permission-классы `IsManagerOrReadOnly` и `CanEditTask`
@@ -111,10 +111,10 @@ coverage run manage.py test && coverage report
 - `tracker/tests/test_models.py` - модели, `visible_for`, права на редактирование
 - `tracker/tests/test_forms.py` - валидация форм (срок в прошлом, чужой проект, исполнитель не из проекта)
 - `tracker/tests/test_views.py` - CRUD через `Client`, регистрация, фильтры
-- `tracker/tests/test_security.py` - **IDOR**: открыть/изменить/удалить/сменить статус/прокомментировать чужую задачу по id, чужой проект, создание задачи в чужом проекте, 403 на управление проектами
+- `tracker/tests/test_security.py` - IDOR: открыть/изменить/удалить/сменить статус/прокомментировать чужую задачу по id, чужой проект, создание задачи в чужом проекте, 403 на управление проектами
 - `tracker/tests/test_api.py` - `APITestCase`: токен, 401 без токена, 404 на чужие задачи, запрет назначать на других
 
-Покрытие 99%, отчёт в `docs/coverage.txt`.
+Покрытие 99% (`docs/coverage.txt`).
 
 ## Безопасность
 
@@ -130,9 +130,9 @@ coverage run manage.py test && coverage report
 
 `.github/workflows/ci.yml`, запускается на push в `main` и на pull request:
 
-1. **lint** - `ruff check` и `ruff format --check`
-2. **test** - PostgreSQL 16 в `services`, проверка миграций, тесты с coverage (не меньше 70%), `check --deploy`
-3. **docker** - сборка образа
+1. lint - `ruff check` и `ruff format --check`
+2. test - PostgreSQL 16 в `services`, проверка миграций, тесты с coverage (не меньше 70%), `check --deploy`
+3. docker - сборка образа
 
 ## Структура
 
@@ -150,7 +150,7 @@ tracker/
 templates/         шаблоны (Bootstrap 5)
 Dockerfile, docker-compose.yml, entrypoint.sh
 .github/workflows/ci.yml
-docs/              скриншоты, отчёты coverage и check --deploy, план защиты
+docs/              скриншоты, отчёты coverage и check --deploy
 ```
 
 ## Скриншоты
