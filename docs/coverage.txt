@@ -1,0 +1,27 @@
+Name                                       Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------
+accounts/__init__.py                           0      0   100%
+accounts/apps.py                               4      0   100%
+accounts/forms.py                             13      0   100%
+accounts/urls.py                               3      0   100%
+accounts/views.py                             14      0   100%
+config/__init__.py                             0      0   100%
+config/settings.py                            38      0   100%
+config/urls.py                                 4      0   100%
+tracker/__init__.py                            0      0   100%
+tracker/admin.py                              31      0   100%
+tracker/api/__init__.py                        0      0   100%
+tracker/api/permissions.py                    14      1    93%   18
+tracker/api/serializers.py                    42      1    98%   71
+tracker/api/urls.py                            8      0   100%
+tracker/api/views.py                          26      0   100%
+tracker/apps.py                                5      0   100%
+tracker/forms.py                              45      0   100%
+tracker/management/__init__.py                 0      0   100%
+tracker/management/commands/__init__.py        0      0   100%
+tracker/management/commands/seed_demo.py      34      0   100%
+tracker/models.py                             79      1    99%   130
+tracker/urls.py                                4      0   100%
+tracker/views.py                             140      1    99%   109
+------------------------------------------------------------------------
+TOTAL                                        504      4    99%
