@@ -1,0 +1,7 @@
+.status-todo { background: #6c757d; }
+.status-in_progress { background: #0d6efd; }
+.status-done { background: #198754; }
+input:not([type=checkbox]):not([type=hidden]), select, textarea { display: block; width: 100%; padding: .375rem .75rem;
+  border: 1px solid #ced4da; border-radius: .375rem; }
+#id_members { list-style: none; padding-left: 0; }
+#id_members input { margin-right: 6px; }

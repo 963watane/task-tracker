@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start">
+  <h3>{{ project.name }}</h3>
+  <div>
+    <a class="btn btn-sm btn-primary" href="{% url 'tracker:task_create' %}?project={{ project.pk }}">+ Задача</a>
+    {% if perms.tracker.change_project %}<a class="btn btn-sm btn-outline-primary" href="{% url 'tracker:project_update' project.pk %}">Изменить</a>{% endif %}
+    {% if perms.tracker.delete_project %}<a class="btn btn-sm btn-outline-danger" href="{% url 'tracker:project_delete' project.pk %}">Удалить</a>{% endif %}
+  </div>
+</div>
+<p>{{ project.description|linebreaksbr }}</p>
+<p class="text-muted">Владелец: {{ project.owner }}. Участники:
+  {% for m in project.members.all %}{{ m.username }}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</p>
+
+<table class="table">
+  <thead><tr><th>Задача</th><th>Статус</th><th>Исполнитель</th><th>Срок</th></tr></thead>
+  <tbody>
+  {% for task in tasks %}
+    <tr><td><a href="{{ task.get_absolute_url }}">{{ task.title }}</a></td><td>{% include "tracker/_status.html" %}</td>
+      <td>{{ task.assignee|default:"-" }}</td><td>{{ task.due_date|date:"d.m.Y"|default:"-" }}</td></tr>
+  {% empty %}
+    <tr><td colspan="4" class="text-muted">Ваших задач в проекте нет.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

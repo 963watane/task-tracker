@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }}{% endblock %}
+{% block content %}
+<a href="{% url 'tracker:task_list' %}">&larr; к задачам</a>
+<div class="d-flex justify-content-between align-items-start mt-2">
+  <h3>{{ task.title }} {% include "tracker/_status.html" %}</h3>
+  <div>
+    {% if can_edit %}<a class="btn btn-sm btn-outline-primary" href="{% url 'tracker:task_update' task.pk %}">Редактировать</a>{% endif %}
+    {% if can_delete %}<a class="btn btn-sm btn-outline-danger" href="{% url 'tracker:task_delete' task.pk %}">Удалить</a>{% endif %}
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-8">
+    <p>{{ task.description|linebreaksbr|default:"<span class='text-muted'>Без описания</span>" }}</p>
+
+    <h5 class="mt-4">Комментарии</h5>
+    {% for c in comments %}
+      <div class="border-start ps-2 mb-2"><b>{{ c.author }}</b> <small class="text-muted">{{ c.created_at|date:"d.m H:i" }}</small><br>{{ c.text|linebreaksbr }}</div>
+    {% empty %}
+      <p class="text-muted">Пока нет.</p>
+    {% endfor %}
+    <form method="post" action="{% url 'tracker:task_comment' task.pk %}" class="mt-2">
+      {% csrf_token %}{{ comment_form.text }}
+      <button class="btn btn-sm btn-secondary mt-2">Отправить</button>
+    </form>
+  </div>
+  <div class="col-md-4">
+    <ul class="list-group">
+      <li class="list-group-item">Проект: <a href="{{ task.project.get_absolute_url }}">{{ task.project }}</a></li>
+      <li class="list-group-item">Приоритет: {{ task.get_priority_display }}</li>
+      <li class="list-group-item">Автор: {{ task.author }}</li>
+      <li class="list-group-item">Исполнитель: {{ task.assignee|default:"-" }}</li>
+      <li class="list-group-item">Срок: {{ task.due_date|date:"d.m.Y"|default:"-" }}</li>
+    </ul>
+    {% if can_edit %}
+    <form method="post" action="{% url 'tracker:task_status' task.pk %}" class="mt-3 d-flex gap-2">
+      {% csrf_token %}{{ status_form.status }}
+      <button class="btn btn-sm btn-success">OK</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

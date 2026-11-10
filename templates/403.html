@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Нет доступа{% endblock %}
+{% block content %}
+<h3>403 - нет доступа</h3>
+<p>Это действие доступно только менеджеру.</p>
+<a href="{% url 'tracker:task_list' %}">К моим задачам</a>
+{% endblock %}
